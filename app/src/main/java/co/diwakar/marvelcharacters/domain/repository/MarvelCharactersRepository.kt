@@ -16,5 +16,5 @@ interface MarvelCharactersRepository {
 
     suspend fun getMarvelCharacter(
         characterId: Int
-    ): Flow<Resource<MarvelCharacter>>
+    ): Resource<MarvelCharacter>
 }

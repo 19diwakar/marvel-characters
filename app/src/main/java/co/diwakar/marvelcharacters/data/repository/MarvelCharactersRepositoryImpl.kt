@@ -71,7 +71,21 @@ class MarvelCharactersRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getMarvelCharacter(characterId: Int): Flow<Resource<MarvelCharacter>> {
-        TODO("Not yet implemented")
+    override suspend fun getMarvelCharacter(characterId: Int): Resource<MarvelCharacter> {
+        return try {
+            val response = api.getCharacter(characterId)
+            val charactersWithId = response.data?.results
+            if (charactersWithId != null && charactersWithId.isNotEmpty()) {
+                Resource.Success(charactersWithId.first())
+            } else {
+                Resource.Error(message = "Couldn't load character")
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+            Resource.Error(e.message ?: "Something went wrong!")
+        } catch (e: HttpException) {
+            e.printStackTrace()
+            Resource.Error(e.message ?: "Something went wrong!")
+        }
     }
 }
