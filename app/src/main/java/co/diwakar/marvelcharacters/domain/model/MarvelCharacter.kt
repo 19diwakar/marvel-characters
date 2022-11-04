@@ -5,8 +5,8 @@ data class MarvelCharacter(
     val name: String?,
     val description: String?,
     val modified: String?,
-    val thumbnail: ImageData? = null,
-    val resourceURI: String?,
+    val thumbnail: ImageData?,
+    val resourceURI: String? = null,
     val comics: Contents? = null,
     val series: Contents? = null,
     val stories: Contents? = null,
@@ -35,4 +35,12 @@ data class Content(
 data class ImageData(
     val path: String?,
     val extension: String?
-)
+) {
+    fun getCompletePath(): String? {
+        return if (path != null && extension != null) {
+            "$path.$extension"
+        } else {
+            null
+        }
+    }
+}

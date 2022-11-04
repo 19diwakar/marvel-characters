@@ -9,5 +9,6 @@ data class MarvelCharactersListingEntity(
     val name: String?,
     val description: String?,
     val modified: String?,
-    val resourceURI: String?,
+    val characterImage: String?,
+    val imageExtension: String?
 )
