@@ -7,6 +7,6 @@ import androidx.room.RoomDatabase
     entities = [MarvelCharactersListingEntity::class],
     version = 1
 )
-abstract class MarvelCharacterDao : RoomDatabase() {
+abstract class MarvelCharacterDatabase : RoomDatabase() {
     abstract val dao: MarvelCharactersDao
 }

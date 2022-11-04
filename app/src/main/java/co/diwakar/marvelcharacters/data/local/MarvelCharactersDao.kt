@@ -15,4 +15,7 @@ interface MarvelCharactersDao {
 
     @Query("DELETE FROM marvelcharacterslistingentity")
     suspend fun clearMarvelCharactersListing()
+
+    @Query("SELECT * FROM marvelcharacterslistingentity")
+    suspend fun getMarvelCharactersListing(): List<MarvelCharactersListingEntity>
 }
