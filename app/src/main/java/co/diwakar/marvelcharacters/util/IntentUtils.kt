@@ -9,6 +9,6 @@ inline fun <reified T : Parcelable?> Bundle.getParcelableData(key: String): T? {
         getParcelable(key, T::class.java)
     } else {
         @Suppress("DEPRECATION")
-        getParcelable(key)
+        getParcelable<T>(key)
     }
 }

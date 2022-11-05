@@ -19,16 +19,20 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import co.diwakar.marvelcharacters.domain.model.MarvelCharacter
+import co.diwakar.marvelcharacters.presentation.destinations.MarvelCharacterDetailsScreenDestination
 import co.diwakar.marvelcharacters.ui.composables.ShimmerAnimation
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
 
+@Destination(start = true)
 @Composable
 fun MarvelCharactersListingScreen(
-    navigateToMarvelCharacterDetailsScreen: (MarvelCharacter) -> Unit
+    navigator: DestinationsNavigator,
+    viewModel: MarvelCharactersListingViewModel = hiltViewModel()
 ) {
-    val viewModel: MarvelCharactersListingViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
     val swipeRefreshState = rememberSwipeRefreshState(
         isRefreshing = state.isRefreshing
@@ -67,7 +71,9 @@ fun MarvelCharactersListingScreen(
                     loadNextPage = {
                         viewModel.onEvent(MarvelCharactersListingEvent.FetchNextPage)
                     },
-                    onItemClicked = navigateToMarvelCharacterDetailsScreen
+                    onItemClicked = {
+                        navigator.navigate(MarvelCharacterDetailsScreenDestination(it))
+                    }
                 )
             }
         }

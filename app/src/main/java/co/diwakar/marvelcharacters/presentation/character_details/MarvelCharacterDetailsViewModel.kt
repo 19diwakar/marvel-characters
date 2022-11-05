@@ -1,5 +1,6 @@
 package co.diwakar.marvelcharacters.presentation.character_details
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import co.diwakar.marvelcharacters.config.BaseViewModel
 import co.diwakar.marvelcharacters.domain.model.MarvelCharacter
@@ -14,10 +15,19 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MarvelCharacterDetailsViewModel @Inject constructor(
+    private val savedStateHandle: SavedStateHandle,
     private val repository: MarvelCharactersRepository
 ) : BaseViewModel() {
     private val _state = MutableStateFlow(MarvelCharacterDetailsState())
     val state = _state as StateFlow<MarvelCharacterDetailsState>
+
+    init {
+        viewModelScope.launch {
+            val characterId =
+                savedStateHandle.get<MarvelCharacter>("marvelCharacter")?.id ?: return@launch
+            fetchCharacterDetails(characterId = characterId)
+        }
+    }
 
     fun onEvent(event: MarvelCharacterDetailsEvent) {
         when (event) {
