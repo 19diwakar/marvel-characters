@@ -10,4 +10,15 @@ data class MarvelCharactersListingState(
     val offset: Int = 0,
     val isPaginationEnabled: Boolean = true,
     val errorMessage: String? = null,
-)
+) {
+    fun progressCount(): Int {
+        val isInitialCall = isLoading && characters.isEmpty()
+        return if (isInitialCall) {
+            //when DB is also empty
+            6
+        } else {
+            //when fetching next page
+            2
+        }
+    }
+}

@@ -40,6 +40,7 @@ class MarvelCharactersRepositoryImpl @Inject constructor(
         query: String?
     ): Flow<Resource<MarvelCharactersData>> {
         return flow {
+            emit(Resource.Loading(true))
             val remoteData = try {
                 val response = api.getCharacters(limit = limit, offset = offset, query = query)
                 response.data
@@ -71,21 +72,26 @@ class MarvelCharactersRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getMarvelCharacter(characterId: Int): Resource<MarvelCharacter> {
-        return try {
-            val response = api.getCharacter(characterId)
-            val charactersWithId = response.data?.results
-            if (charactersWithId != null && charactersWithId.isNotEmpty()) {
-                Resource.Success(charactersWithId.first())
-            } else {
-                Resource.Error(message = "Couldn't load character")
+    override suspend fun getMarvelCharacter(characterId: Int): Flow<Resource<MarvelCharacter>> {
+        return flow {
+            emit(Resource.Loading(true))
+            val remoteData = try {
+                val response = api.getCharacter(characterId)
+                response.data?.results?.firstOrNull()
+            } catch (e: IOException) {
+                e.printStackTrace()
+                emit(Resource.Error(e.message ?: "Something went wrong!"))
+                null
+            } catch (e: HttpException) {
+                e.printStackTrace()
+                emit(Resource.Error(e.message ?: "Something went wrong!"))
+                null
             }
-        } catch (e: IOException) {
-            e.printStackTrace()
-            Resource.Error(e.message ?: "Something went wrong!")
-        } catch (e: HttpException) {
-            e.printStackTrace()
-            Resource.Error(e.message ?: "Something went wrong!")
+
+            remoteData?.let { character ->
+                emit(Resource.Success(character))
+                emit(Resource.Loading(false))
+            }
         }
     }
 }

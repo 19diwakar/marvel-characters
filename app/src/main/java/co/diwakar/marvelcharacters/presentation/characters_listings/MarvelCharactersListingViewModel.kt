@@ -1,7 +1,8 @@
 package co.diwakar.marvelcharacters.presentation.characters_listings
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import co.diwakar.marvelcharacters.config.BaseViewModel
+import co.diwakar.marvelcharacters.domain.model.MarvelCharactersData
 import co.diwakar.marvelcharacters.domain.repository.MarvelCharactersRepository
 import co.diwakar.marvelcharacters.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,7 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MarvelCharactersListingViewModel @Inject constructor(
     private val repository: MarvelCharactersRepository
-) : ViewModel() {
+) : BaseViewModel() {
 
     private val _state = MutableStateFlow(MarvelCharactersListingState())
     val state = _state as StateFlow<MarvelCharactersListingState>
@@ -37,23 +38,23 @@ class MarvelCharactersListingViewModel @Inject constructor(
             }
             is MarvelCharactersListingEvent.FetchNextPage -> {
                 if (state.value.isPaginationEnabled && state.value.isLoading.not()) {
-                    _state.update {
-                        it.copy(isLoading = true)
-                    }
                     getMarvelCharactersListings()
                 }
             }
-            is MarvelCharactersListingEvent.OnSearchQueryChange -> {
-                _state.update {
-                    val query = event.query.ifBlank { null }
-                    it.copy(searchQuery = query, offset = 0)
-                }
-                searchJob?.cancel()
-                searchJob = viewModelScope.launch {
-                    delay(500L)
-                    getMarvelCharactersListings()
-                }
-            }
+            is MarvelCharactersListingEvent.OnSearchQueryChange -> onSearchQuery(event.query)
+            is MarvelCharactersListingEvent.ResetError -> onError(message = null)
+        }
+    }
+
+    private fun onSearchQuery(toSearch: String) {
+        _state.update {
+            val query = toSearch.ifBlank { null }
+            it.copy(searchQuery = query, offset = 0)
+        }
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+            delay(500L)
+            getMarvelCharactersListings()
         }
     }
 
@@ -72,40 +73,49 @@ class MarvelCharactersListingViewModel @Inject constructor(
     private fun getMarvelCharactersListings() {
         viewModelScope.launch {
             repository.getMarvelCharacters(
-                limit = LIMIT, offset = state.value.offset, query = state.value.searchQuery
+                limit = LIMIT,
+                offset = state.value.offset,
+                query = state.value.searchQuery
             ).collect { result ->
                 when (result) {
-                    is Resource.Success -> {
-                        result.data?.let { data ->
-                            _state.update {
-                                //if previous characters are fetched from local
-                                //then we will not consider them
-                                val prevCharacters =
-                                    if (it.offset == 0) emptyList() else it.characters
-                                val newCharacters =
-                                    listOf(prevCharacters, data.results ?: emptyList()).flatten()
-                                val newOffset = it.offset + (data.count ?: 0)
-
-                                it.copy(
-                                    characters = newCharacters,
-                                    offset = newOffset,
-                                    isPaginationEnabled = newOffset < (data.total ?: 0)
-                                )
-                            }
-                        }
-                    }
-                    is Resource.Error -> {
-                        _state.update {
-                            it.copy(errorMessage = it.errorMessage)
-                        }
-                    }
-                    is Resource.Loading -> {
-                        _state.update {
-                            it.copy(isLoading = result.isLoading)
-                        }
-                    }
+                    is Resource.Success -> onRemoteRequestSuccess(result.data)
+                    is Resource.Error -> onError(result.message)
+                    is Resource.Loading -> onLoadUpdated(result.isLoading)
                 }
             }
+        }
+    }
+
+    private fun onRemoteRequestSuccess(data: MarvelCharactersData?) {
+        data?.let { toSet ->
+            _state.update {
+                //if previous characters are fetched from local
+                //then we will not consider them
+                val prevCharacters =
+                    if (it.offset == 0) emptyList() else it.characters
+                val newCharacters =
+                    listOf(prevCharacters, toSet.results ?: emptyList()).flatten()
+                val newOffset = it.offset + (toSet.count ?: 0)
+                val totalCount = toSet.total ?: 0
+
+                it.copy(
+                    characters = newCharacters,
+                    offset = newOffset,
+                    isPaginationEnabled = newOffset < totalCount
+                )
+            }
+        }
+    }
+
+    override fun onError(message: String?) {
+        _state.update {
+            it.copy(errorMessage = message)
+        }
+    }
+
+    override fun onLoadUpdated(isLoading: Boolean) {
+        _state.update {
+            it.copy(isLoading = isLoading)
         }
     }
 
