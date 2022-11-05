@@ -8,9 +8,6 @@ data class MarvelCharactersListingState(
     val isRefreshing: Boolean = false,
     val searchQuery: String? = null,
     val offset: Int = 0,
-    val totalCount: Int? = null
-) {
-    fun isPaginationEnabled(): Boolean {
-        return (totalCount ?: 0) <= offset
-    }
-}
+    val isPaginationEnabled: Boolean = true,
+    val errorMessage: String? = null,
+)

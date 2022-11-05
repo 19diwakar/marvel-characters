@@ -1,18 +1,19 @@
-package co.diwakar.marvelcharacters.ui.components
+package co.diwakar.marvelcharacters.ui.composables
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.unit.dp
 import co.diwakar.marvelcharacters.ui.theme.ShimmerColorShades
 
 @Composable
-fun ShimmerAnimation() {
+fun ShimmerAnimation(modifier: Modifier = Modifier) {
     val transition = rememberInfiniteTransition()
     val translateAnim by transition.animateFloat(
         initialValue = 0f, targetValue = 1000f, animationSpec = infiniteRepeatable(
@@ -26,23 +27,15 @@ fun ShimmerAnimation() {
         end = Offset(translateAnim, translateAnim)
     )
 
-    ShimmerItem(brush = brush)
+    ShimmerItem(brush = brush, modifier = modifier)
 }
 
 @Composable
-fun ShimmerItem(brush: Brush) {
+fun ShimmerItem(brush: Brush, modifier: Modifier) {
     Column {
         Spacer(
-            modifier = Modifier
-                .fillMaxWidth()
-                .size(250.dp)
-                .background(brush = brush)
-        )
-        Spacer(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(30.dp)
-                .padding(8.dp)
+            modifier = modifier
+                .fillMaxSize()
                 .background(brush = brush)
         )
     }

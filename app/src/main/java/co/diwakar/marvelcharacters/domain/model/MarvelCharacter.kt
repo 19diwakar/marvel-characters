@@ -38,7 +38,7 @@ data class ImageData(
 ) {
     fun getCompletePath(): String? {
         return if (path != null && extension != null) {
-            "$path.$extension"
+            "$path.$extension".replace("http", "https")
         } else {
             null
         }

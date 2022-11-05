@@ -16,7 +16,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import co.diwakar.marvelcharacters.domain.model.MarvelCharacter
-import co.diwakar.marvelcharacters.ui.components.ShimmerAnimation
+import co.diwakar.marvelcharacters.ui.composables.ShimmerAnimation
 import co.diwakar.marvelcharacters.ui.theme.Marvel
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
@@ -37,19 +37,10 @@ fun MarvelCharacterItem(
         Column(
             modifier = Modifier.fillMaxSize(),
         ) {
-            SubcomposeAsyncImage(
-                model = character.thumbnail?.getCompletePath(),
-                contentDescription = null,
-                modifier = Modifier.weight(1f),
-                contentScale = ContentScale.Crop,
-            ) {
-                when (painter.state) {
-                    is AsyncImagePainter.State.Loading,
-                    is AsyncImagePainter.State.Error ->
-                        ShimmerAnimation()
-                    else -> SubcomposeAsyncImageContent()
-                }
-            }
+            CharacterImage(
+                path = character.thumbnail?.getCompletePath(),
+                modifier = Modifier.weight(1f)
+            )
             Divider(
                 color = Marvel, modifier = Modifier.fillMaxWidth(), thickness = 2.dp
             )
@@ -64,6 +55,23 @@ fun MarvelCharacterItem(
                     .padding(12.dp)
                     .heightIn(16.dp)
             )
+        }
+    }
+}
+
+@Composable
+fun CharacterImage(path: String?, modifier: Modifier = Modifier) {
+    SubcomposeAsyncImage(
+        model = path,
+        contentDescription = null,
+        modifier = modifier,
+        contentScale = ContentScale.Crop,
+    ) {
+        when (painter.state) {
+            is AsyncImagePainter.State.Loading,
+            is AsyncImagePainter.State.Error ->
+                ShimmerAnimation(modifier = Modifier.fillMaxSize())
+            else -> SubcomposeAsyncImageContent()
         }
     }
 }

@@ -36,7 +36,10 @@ class MarvelCharactersListingViewModel @Inject constructor(
                 getMarvelCharactersListings()
             }
             is MarvelCharactersListingEvent.FetchNextPage -> {
-                if (state.value.isPaginationEnabled()) {
+                if (state.value.isPaginationEnabled && state.value.isLoading.not()) {
+                    _state.update {
+                        it.copy(isLoading = true)
+                    }
                     getMarvelCharactersListings()
                 }
             }
@@ -75,6 +78,8 @@ class MarvelCharactersListingViewModel @Inject constructor(
                     is Resource.Success -> {
                         result.data?.let { data ->
                             _state.update {
+                                //if previous characters are fetched from local
+                                //then we will not consider them
                                 val prevCharacters =
                                     if (it.offset == 0) emptyList() else it.characters
                                 val newCharacters =
@@ -84,12 +89,16 @@ class MarvelCharactersListingViewModel @Inject constructor(
                                 it.copy(
                                     characters = newCharacters,
                                     offset = newOffset,
-                                    totalCount = data.total
+                                    isPaginationEnabled = newOffset < (data.total ?: 0)
                                 )
                             }
                         }
                     }
-                    is Resource.Error -> {}
+                    is Resource.Error -> {
+                        _state.update {
+                            it.copy(errorMessage = it.errorMessage)
+                        }
+                    }
                     is Resource.Loading -> {
                         _state.update {
                             it.copy(isLoading = result.isLoading)
