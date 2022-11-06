@@ -10,5 +10,6 @@ data class MarvelCharactersListingEntity(
     val description: String?,
     val modified: String?,
     val characterImage: String?,
-    val imageExtension: String?
+    val imageExtension: String?,
+    val isComicsPresent: Boolean?
 )

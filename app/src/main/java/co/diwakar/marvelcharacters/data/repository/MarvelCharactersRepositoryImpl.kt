@@ -6,6 +6,7 @@ import co.diwakar.marvelcharacters.data.mapper.toMarvelCharactersListingEntity
 import co.diwakar.marvelcharacters.data.remote.MarvelApi
 import co.diwakar.marvelcharacters.domain.model.MarvelCharacter
 import co.diwakar.marvelcharacters.domain.model.MarvelCharactersData
+import co.diwakar.marvelcharacters.domain.model.MarvelComicsData
 import co.diwakar.marvelcharacters.domain.repository.MarvelCharactersRepository
 import co.diwakar.marvelcharacters.util.Resource
 import kotlinx.coroutines.flow.Flow
@@ -72,12 +73,20 @@ class MarvelCharactersRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getMarvelCharacter(characterId: Int): Flow<Resource<MarvelCharacter>> {
+    override suspend fun getMarvelCharacterComics(
+        characterId: Int,
+        limit: Int,
+        offset: Int
+    ): Flow<Resource<MarvelComicsData>> {
         return flow {
             emit(Resource.Loading(true))
             val remoteData = try {
-                val response = api.getCharacter(characterId)
-                response.data?.results?.firstOrNull()
+                val response = api.getCharacterComics(
+                    limit = limit,
+                    offset = offset,
+                    characterId = characterId
+                )
+                response.data
             } catch (e: IOException) {
                 e.printStackTrace()
                 emit(Resource.Error(e.message ?: "Something went wrong!"))
@@ -88,8 +97,8 @@ class MarvelCharactersRepositoryImpl @Inject constructor(
                 null
             }
 
-            remoteData?.let { character ->
-                emit(Resource.Success(character))
+            remoteData?.let { data ->
+                emit(Resource.Success(data = data))
                 emit(Resource.Loading(false))
             }
         }

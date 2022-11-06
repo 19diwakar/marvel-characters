@@ -15,8 +15,13 @@ data class MarvelCharacter(
     val series: Contents? = null,
     val stories: Contents? = null,
     val events: Contents? = null,
-    val urls: List<CharacterUrl>? = null
-) : Parcelable
+    val urls: List<CharacterUrl>? = null,
+    var isComicsPresent: Boolean? = null
+) : Parcelable {
+    fun isComicsPresent(): Boolean {
+        return isComicsPresent == true || (comics?.available ?: 0) > 0
+    }
+}
 
 @Parcelize
 data class CharacterUrl(
@@ -38,17 +43,3 @@ data class Content(
     val name: String?,
     val type: String?
 ) : Parcelable
-
-@Parcelize
-data class ImageData(
-    val path: String?,
-    val extension: String?
-) : Parcelable {
-    fun getCompletePath(): String? {
-        return if (path != null && extension != null) {
-            "$path.$extension".replace("http", "https")
-        } else {
-            null
-        }
-    }
-}

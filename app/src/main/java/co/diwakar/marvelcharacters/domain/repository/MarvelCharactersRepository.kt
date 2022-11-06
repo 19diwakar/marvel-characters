@@ -2,6 +2,7 @@ package co.diwakar.marvelcharacters.domain.repository
 
 import co.diwakar.marvelcharacters.domain.model.MarvelCharacter
 import co.diwakar.marvelcharacters.domain.model.MarvelCharactersData
+import co.diwakar.marvelcharacters.domain.model.MarvelComicsData
 import co.diwakar.marvelcharacters.util.Resource
 import kotlinx.coroutines.flow.Flow
 
@@ -14,7 +15,9 @@ interface MarvelCharactersRepository {
         query: String? = null
     ): Flow<Resource<MarvelCharactersData>>
 
-    suspend fun getMarvelCharacter(
-        characterId: Int
-    ): Flow<Resource<MarvelCharacter>>
+    suspend fun getMarvelCharacterComics(
+        characterId: Int,
+        limit: Int,
+        offset: Int
+    ): Flow<Resource<MarvelComicsData>>
 }

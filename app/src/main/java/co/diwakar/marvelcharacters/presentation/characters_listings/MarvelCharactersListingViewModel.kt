@@ -89,13 +89,15 @@ class MarvelCharactersListingViewModel @Inject constructor(
     private fun onRemoteRequestSuccess(data: MarvelCharactersData?) {
         data?.let { toSet ->
             _state.update {
-                //if previous characters are fetched from local
-                //then we will not consider them
-                val prevCharacters =
-                    if (it.offset == 0) emptyList() else it.characters
-                val newCharacters =
-                    listOf(prevCharacters, toSet.results ?: emptyList()).flatten()
-                val newOffset = it.offset + (toSet.count ?: 0)
+                val prevCharacters = if (it.offset == 0) {
+                    //if previous characters are fetched from local
+                    emptyList()
+                } else {
+                    //then we will not consider them
+                    it.characters
+                }
+                val newCharacters = listOf(prevCharacters, toSet.results ?: emptyList()).flatten()
+                val newOffset = newCharacters.size
                 val totalCount = toSet.total ?: 0
 
                 it.copy(

@@ -4,7 +4,6 @@ import co.diwakar.marvelcharacters.data.local.MarvelCharactersListingEntity
 import co.diwakar.marvelcharacters.domain.model.ImageData
 import co.diwakar.marvelcharacters.domain.model.MarvelCharacter
 
-
 fun MarvelCharactersListingEntity.toMarvelCharactersListing(): MarvelCharacter {
     return MarvelCharacter(
         id = id,
@@ -14,7 +13,8 @@ fun MarvelCharactersListingEntity.toMarvelCharactersListing(): MarvelCharacter {
         thumbnail = ImageData(
             path = characterImage,
             extension = imageExtension
-        )
+        ),
+        isComicsPresent = isComicsPresent
     )
 }
 
@@ -25,6 +25,7 @@ fun MarvelCharacter.toMarvelCharactersListingEntity(): MarvelCharactersListingEn
         description = description,
         characterImage = thumbnail?.path,
         imageExtension = thumbnail?.extension,
-        modified = modified
+        modified = modified,
+        isComicsPresent = (comics?.available ?: 0) > 0
     )
 }
