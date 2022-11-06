@@ -1,8 +1,8 @@
 package co.diwakar.marvelcharacters.presentation.character_details
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import co.diwakar.marvelcharacters.config.BaseViewModel
 import co.diwakar.marvelcharacters.domain.model.MarvelCharacter
 import co.diwakar.marvelcharacters.domain.model.MarvelComicsData
 import co.diwakar.marvelcharacters.domain.repository.MarvelCharactersRepository
@@ -18,7 +18,7 @@ import javax.inject.Inject
 class MarvelCharacterDetailsViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val repository: MarvelCharactersRepository
-) : BaseViewModel() {
+) : ViewModel() {
     private val _state = MutableStateFlow(MarvelCharacterDetailsState())
     val state = _state as StateFlow<MarvelCharacterDetailsState>
 
@@ -77,13 +77,13 @@ class MarvelCharacterDetailsViewModel @Inject constructor(
         }
     }
 
-    override fun onError(message: String?) {
+    private fun onError(message: String?) {
         _state.update {
             it.copy(errorMessage = message)
         }
     }
 
-    override fun onLoadUpdated(isLoading: Boolean) {
+    private fun onLoadUpdated(isLoading: Boolean) {
         _state.update {
             it.copy(isLoading = isLoading)
         }

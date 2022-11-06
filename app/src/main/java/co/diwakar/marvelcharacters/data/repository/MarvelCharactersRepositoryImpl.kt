@@ -58,6 +58,10 @@ class MarvelCharactersRepositoryImpl @Inject constructor(
             remoteData?.let { data ->
                 val remoteListings = data.results
                 remoteListings?.let { listings ->
+                    /**
+                     * store data in local storage if it is the first API call
+                     * for characters listing
+                     * */
                     val shouldSaveInCache = offset == 0 && query.isNullOrBlank()
                     if (shouldSaveInCache) {
                         dao.clearMarvelCharactersListing()

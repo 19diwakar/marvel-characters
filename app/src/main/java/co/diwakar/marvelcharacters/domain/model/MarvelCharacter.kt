@@ -18,6 +18,11 @@ data class MarvelCharacter(
     val urls: List<CharacterUrl>? = null,
     var isComicsPresent: Boolean? = null
 ) : Parcelable {
+
+    /**
+     * returns [isComicsPresent] if it is set at the time of Local database mapping
+     * otherwise it will check it from available comics
+     * */
     fun isComicsPresent(): Boolean {
         return isComicsPresent == true || (comics?.available ?: 0) > 0
     }

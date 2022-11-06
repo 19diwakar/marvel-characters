@@ -23,9 +23,11 @@ fun MarvelCharacter.toMarvelCharactersListingEntity(): MarvelCharactersListingEn
         id = id,
         name = name,
         description = description,
+        //break the thumbnail into [characterImage] & [imageExtension]
         characterImage = thumbnail?.path,
         imageExtension = thumbnail?.extension,
         modified = modified,
+        //set the [isComicsPresent] true if there is any comics available
         isComicsPresent = (comics?.available ?: 0) > 0
     )
 }

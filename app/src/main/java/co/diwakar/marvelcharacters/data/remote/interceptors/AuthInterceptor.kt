@@ -7,6 +7,10 @@ import okhttp3.Response
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * It uses to append required query parameters for each request
+ * [apiKey], [hash] and [timeStamp] with the original request
+ * */
 @Singleton
 class AuthInterceptor @Inject constructor() : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {

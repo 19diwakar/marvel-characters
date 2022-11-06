@@ -1,7 +1,7 @@
 package co.diwakar.marvelcharacters.presentation.characters_listings
 
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import co.diwakar.marvelcharacters.config.BaseViewModel
 import co.diwakar.marvelcharacters.domain.model.MarvelCharactersData
 import co.diwakar.marvelcharacters.domain.repository.MarvelCharactersRepository
 import co.diwakar.marvelcharacters.util.Resource
@@ -17,7 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MarvelCharactersListingViewModel @Inject constructor(
     private val repository: MarvelCharactersRepository
-) : BaseViewModel() {
+) : ViewModel() {
 
     private val _state = MutableStateFlow(MarvelCharactersListingState())
     val state = _state as StateFlow<MarvelCharactersListingState>
@@ -109,13 +109,13 @@ class MarvelCharactersListingViewModel @Inject constructor(
         }
     }
 
-    override fun onError(message: String?) {
+    private fun onError(message: String?) {
         _state.update {
             it.copy(errorMessage = message)
         }
     }
 
-    override fun onLoadUpdated(isLoading: Boolean) {
+    private fun onLoadUpdated(isLoading: Boolean) {
         _state.update {
             it.copy(isLoading = isLoading)
         }
